@@ -1,0 +1,13 @@
+*.o
+*.exe
+*.out
+
+*.dSYM
+*tempCodeRunnerFile*
+*.log
+
+.vscode/
+.idea/
+*.iml
+
+.DS_Store
