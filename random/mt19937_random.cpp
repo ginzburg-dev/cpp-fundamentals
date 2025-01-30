@@ -11,7 +11,7 @@ int main()
     std::mt19937 mt_rd{ std::random_device{}() }; // seeding by random_device{}.operator()
 
     std::random_device rd{};
-    std::seed_seq ss{ rd(), rd(), rd(), rd(),  rd(), rd(), rd(), rd()};
+    std::seed_seq ss{ rd(), rd(), rd(), rd(),  rd(), rd(), rd(), rd()}; // warming up our PRNG
     std::mt19937 mt_ss{ std::random_device{}() }; // seeding by seed sequence of 8 random_device values
 
     std::uniform_int_distribution<> die6{1, 6};
