@@ -4,7 +4,6 @@
 
 namespace Random
 {
-
     std::mt19937 generate()
     {
         std::random_device rd{};
@@ -20,7 +19,6 @@ namespace Random
     {
         return std::uniform_int_distribution<>{min, max}(mt);
     }
-
 }
 
 int getValue()
