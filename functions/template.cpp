@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <type_traits> // for std::common_type_t
 
 template <typename T>
 T max(T x, T y)
@@ -42,6 +43,32 @@ void someFnc(T x, int times = 1)
     }
 }
 
+template <typename T, typename U>
+auto maxMulti(T x, U y)
+{
+    return ( x > y ) ? x : y;
+}
+
+// to have a common type of T and U as a return type
+template <typename T, typename U>
+auto maxMultiCommon(T x, U y) -> std::common_type_t<T, U>
+{
+    return ( x > y ) ? x : y;
+}
+
+// template function override
+template <typename T, typename U, typename V>
+auto maxMultiCommon(T x, U y, V z) -> std::common_type_t<T, U>
+{
+    return ( ( ( x > y ) ? x : y ) > z ) ? ( ( x > y ) ? x : y ) : z;
+}
+
+// abbreviated function template  from c++20 above. all params are different
+auto maxAbbreviated(auto x, auto y)
+{
+    return ( x > y ) ? x : y;
+}
+
 int main()
 {
     std::cout << max<int>(1, 2) << '\n';
@@ -56,6 +83,15 @@ int main()
 
     someFnc('a', 3);
     someFnc(5, 1);
+
+    // std::cout << max<>(1.2, 2) << '\n'; // compile error
+    std::cout << max<double>(1.2, 2) << '\n'; // correct version. explicitly specify T to convert y to double
+
+    std::cout << maxMulti(1, 2.3) << '\n'; 
+    std::cout << maxMultiCommon(2, 2.3) << '\n';
+    std::cout << maxMultiCommon(9.32, 2.3, 5.5) << '\n';
+
+    std::cout << maxAbbreviated(1, 5.5) << '\n';
 
     return 0;
 }
