@@ -1,4 +1,7 @@
 #include <iostream>
+#include <optional>
+#include <string>
+#include <string_view>
 
 enum Color
 {
@@ -30,12 +33,39 @@ enum Animals
     chicken,     // 6
 };
 
+enum Pets
+{
+    parrot,
+    fox,
+    cow,
+};
+
 // Use an 8-bit integer as the enum underlying type
 enum Spec : std::int8_t
 {
     spec1,
     spec2,
 };
+
+constexpr std::string_view getPetName(Pets pet)
+{
+    switch (pet)
+    {
+    case parrot: return "parrot";
+    case fox: return "fox";
+    case cow: return "cow";
+    default: return "???";
+    }
+}
+
+constexpr std::optional<Pets> getPetFromString(std::string_view sv)
+{
+    if (sv == "parrot") return Pets::parrot;
+    if (sv == "fox") return Pets::fox;
+    if (sv == "cow") return Pets::cow;
+
+    return {};
+}
 
 int main()
 {
@@ -50,11 +80,23 @@ int main()
         std::cout << "Your state isn't run!\n";
     
     Animals anim {};
-    std::cout << anim; // prints 0
+    std::cout << anim << '\n'; // prints 0
 
     anim = static_cast<Animals>(-1); // pig
 
     Spec sp { 1 }; // ok: can brace initialize unscoped enumeration with specified base with integer (C++17)
+
+    // Working with strings
+    std::cout << "Enter a pet: parrot, fox, cow: ";
+    std::string s{};
+    std::cin >> s;
+
+    std::optional<Pets> pet { getPetFromString(s) };
+    
+    if (!pet)
+        std::cout << "You entered an invalid pet\n";
+    else
+        std::cout << "You entered: " << getPetName(*pet) << '\n';
 
     return 0;
 }
