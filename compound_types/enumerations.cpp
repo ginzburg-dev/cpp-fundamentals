@@ -51,6 +51,10 @@ int main()
     
     Animals anim {};
     std::cout << anim; // prints 0
-    
+
+    anim = static_cast<Animals>(-1); // pig
+
+    Spec sp { 1 }; // ok: can brace initialize unscoped enumeration with specified base with integer (C++17)
+
     return 0;
 }
