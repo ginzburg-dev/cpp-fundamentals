@@ -51,5 +51,6 @@ int main()
     
     Animals anim {};
     std::cout << anim; // prints 0
+    
     return 0;
 }
