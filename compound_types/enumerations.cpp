@@ -12,13 +12,30 @@ namespace State
 {
     enum State
     {
-        idle,
+        idle, // “unknown” enumerator with value 0
         walk,
         run,
         jump,
     };
     
 }
+
+enum Animals
+{
+    cat = -3,    // -3
+    dog,         // -2
+    pig,         // -1
+    horse = 5,   // 5
+    giraffe = 5, // 5
+    chicken,     // 6
+};
+
+// Use an 8-bit integer as the enum underlying type
+enum Spec : std::int8_t
+{
+    spec1,
+    spec2,
+};
 
 int main()
 {
@@ -32,5 +49,7 @@ int main()
     else
         std::cout << "Your state isn't run!\n";
     
+    Animals anim {};
+    std::cout << anim; // prints 0
     return 0;
 }
