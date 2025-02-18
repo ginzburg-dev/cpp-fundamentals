@@ -26,7 +26,7 @@ int main()
     else
         std::cout << "Joe and Frank make the same amount\n";
 
-    // frank got a promotion
+    // Frank got a promotion
     frank.wage += 5000.0;
 
     // Today is Joe's birthday
