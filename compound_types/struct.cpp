@@ -1,5 +1,7 @@
 #include <iostream>
 
+//Provide a default value for all members
+
 struct Employee
 {
     int id {};
@@ -9,7 +11,7 @@ struct Employee
 
 struct Computer
 {
-    int processor;    // 0 by default
+    int processor {}; // 0 by default
     int ram { 32 };   // 32 by default
     double price {};  // 0 by default
 };
@@ -30,7 +32,7 @@ int main()
 {
     Employee joe { 14, 32, 60000.0 }; // list initialization using braced list (preferred)
 
-    Computer computer {};
+    Computer computer {}; // prefer value initialization (with an empty braces initializer) to default initialization
     std::cout << computer << '\n';
 
     const Employee constEmployee {18, 21, 35000.0};
