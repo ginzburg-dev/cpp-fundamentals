@@ -16,6 +16,35 @@ struct Computer
     double price {};  // 0 by default
 };
 
+struct Company
+{
+    struct Employee_c
+    {
+        int id {};
+        int age {};
+        double wage {};
+    };
+
+    int numberOfEmployees {};
+    Employee_c CEO {};
+};
+
+// You can minimize padding by defining your members in decreasing order of size.
+struct Foo1
+{
+    short a{}; // will have 2 bytes of padding after a
+    int b{};
+    short c{}; // will have 2 bytes of padding after c
+}; // 12 bytes
+
+struct Foo2
+{
+    int b{};
+    short a{};
+    short c{};
+}; // 8 bytes
+
+
 std::ostream& operator<<(std::ostream& out, const Computer& computer)
 {
     out << "processor: " << computer.processor << " RAM: " << computer.ram << " price: " << computer.price;
@@ -68,6 +97,8 @@ int main()
 
     // Today is Joe's birthday
     ++joe.age;
+
+    Company company { 7, { 1, 30, 55000.0 } };
 
     return 0;
 }
