@@ -100,5 +100,16 @@ int main()
 
     Company company { 7, { 1, 30, 55000.0 } };
 
+    Employee& ref1 { e1 }; 
+    ref1.age = 20; // Use member selection operator (.) to select member from reference to struct
+
+    Employee* ptr1 { &e1 };
+    (*ptr1).age = 30; // Not great but works: First dereference ptr, then use member selection
+    ptr1->age = 30; // Better: use -> to select member from pointer to object
+
+    Company company1 { 9, { 1, 30, 55000.0 } };
+    Company* ptr2 { &company1 };
+    (ptr2->CEO).age = 31; // () are help readability slightly
+
     return 0;
 }
