@@ -12,7 +12,10 @@ struct Point3d
 };
 
 template <typename T>
-constexpr auto length(Point3d<T> p) -> double
+Point3d(T, T, T) -> Point3d<T>;
+
+template <typename T>
+constexpr auto length(const Point3d<T>& p) -> double
 {
     return std::sqrt( p.x * p.x + p.y * p.y + p.z * p.z );
 }
