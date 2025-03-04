@@ -18,7 +18,7 @@ public:
 
     //double Length(const Point2& p) const;
 
-    void set(double x = 0, double y = 0); // preferr putting default arguments here
+    void set(double x = 0, double y = 0); // prefer putting default arguments here
 
     double x() const { return m_x; } // inline
     double y() const { return m_y; } // inline
