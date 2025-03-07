@@ -32,6 +32,15 @@ int g_value; // it's a definition
 extern int g_value_extern; // it's just a forward declaration. compiler trust us and doesn't allocate memory immediately. In this case, you can share this var across *.cpp files. Just declare it with forward decl
 int g_value_extern{ 1 }; // so we are able to define g_value_extern somewhere in the code e.g. even outside the translation unit
 
+class Boo
+{
+public:
+    static int s_x; // forward declaration
+    static inline int s_y { 1 }; // can be initialized and defined inside a class directly
+};
+
+int Boo::s_x { 1 }; // defenition
+
 int main()
 {
     Simple::s_value = 2;
