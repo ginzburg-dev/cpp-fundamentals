@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+// Favor constexpr std::bitset, std::vector<char>, or 3rd party dynamic bitsets over std::vector<bool>.
+
 class Foo
 {
 private:
