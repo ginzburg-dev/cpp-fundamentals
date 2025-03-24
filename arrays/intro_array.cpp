@@ -42,5 +42,6 @@ int main()
     constexpr std::array word { 'a', 'b', 'c' };
     std::cout << word[1] << '\n';
 
+    constexpr auto arr5 { std::to_array<short>( { 1, 2, 3, 4 } ) }; // if you need to define it without length. Partially ommited.
     return 0;
 }
