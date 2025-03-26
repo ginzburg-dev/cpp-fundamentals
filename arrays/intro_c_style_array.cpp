@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iterator> // for std::size() and std::ssize()
+#include <algorithm> // for std::copy
 
 // get the lengh of an array prior to C++17
 template <typename T, std::size_t N>
@@ -11,6 +12,7 @@ constexpr std::size_t length( const T(&)[N] ) // T(&)[N] - (&) means reference t
 int main()
 {
     int testScores[1];
+    constexpr int a[3] {};
 
     testScores[0] = 1;
     std::cout << testScores[0] << '\n';
@@ -35,7 +37,7 @@ int main()
 
     int arr1[] { 1, 2, 3, 4, 5 };
     int src[] { 5, 4, 3, 2, 1};
-    std::copy(std::begin(src), std::end(src), std::begin(arr1)); // copy src[] to arr[]
+    std::copy(std::begin(src), std::end(src), std::begin(arr1)); // copy src[] to arr1[]
 
 
     return 0;
