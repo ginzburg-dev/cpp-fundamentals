@@ -35,6 +35,7 @@ int main()
     
     const char* str { "Hello World!" };
     processCString(str);
+    std::cout << str << '\n'; //
 
     return 0;
 }
