@@ -18,6 +18,7 @@ int main()
     std::cout << testScores[0] << '\n';
 
     const int arr[] { 1, 2, 3, 4, 5 };
+    auto ptr{ arr }; // evaluation causes arr to decay, int*
 
     int s{1};
     std::cout << arr[s] << '\n'; // C-style array will accept signed or unsigned indexing
