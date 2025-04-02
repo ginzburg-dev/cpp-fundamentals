@@ -5,6 +5,16 @@
 #include <cassert>
 #include "../random/random.h"
 
+namespace Settings
+{
+    // Maximum score before losing.
+    constexpr int bust{ 21 };
+
+    // Minium score that the dealer has to have.
+    constexpr int dealerStopsAt{ 17 };
+}
+
+
 struct Card
 {
     enum Rank
