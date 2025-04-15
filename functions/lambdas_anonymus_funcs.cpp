@@ -41,6 +41,15 @@ void repeat4(int n, void (*fn)(int))
         fn(i);
 }
 
+// Behind-the-scenes structure of a lambda
+struct GenericLambda
+{
+    template <typename T>
+    void operator()(T x) const { 
+        return x * 2; 
+    }
+};
+
 int main()
 {
     // Example 1
@@ -131,6 +140,47 @@ int main()
     }) };
     
     std::cout << "Example 5 count: " << count << '\n';
+
+    // Example 7 Static
+
+    // Every call to a generic lambda (templated via auto) with a different value type initializes a unique static callCaount variable
+    auto print{
+        [](auto value){
+            static int callCount{1};
+            std::cout << callCount++ << ": " << value << '\n';
+        }
+    };
+
+    print(1); // 1: 1
+    print(2); // 2: 2
+
+    print(3.4); // 1: 3.4
+
+    print("Hello"); // 1: Hello
+    print("Static"); // 2: Static
+
+    // Example 8 Lambda's return type
+
+    []()->double{};
+    auto divide { [](int x, int y, bool intDivision) -> double {
+        if ( intDivision )
+            return x / y;
+        else
+            return static_cast<double>(x) / y;
+    }};
+    
+    std::cout << divide(3, 2, true) << '\n';
+    std::cout << divide(3, 2, false) << '\n';
+
+    // Example 9 Standard library function objects
+
+    // std::greater in <functional> header
+    std::array arr5 { 100, 50, 22, 79, 3, 949, 2 };
+
+    std::sort(arr5.begin(), arr5.end(), std::greater{}); // note: need cusly braces to instantiate object
+
+    for ( int i : arr5 )
+        std::cout << i << ' ';
     
     return 0;
 }
