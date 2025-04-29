@@ -24,8 +24,10 @@ public:
 
     Number& operator= (Number& number) // The copy assignment operator must be overloaded as a member function.
     {
-        if ( this != &number ) // working around self-assignment
-            m_value = number.m_value;
+        if ( this == &number ) // working around self-assignment
+            return *this;
+        
+        m_value = number.m_value;
         
         return *this;
     }
