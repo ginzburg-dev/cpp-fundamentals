@@ -67,14 +67,13 @@ MyString::MyString(const MyString& source)
 int main()
 {
     MyString str1{"Hello World!"};
-
     MyString str2{ str1 };
 
     {
-        MyString str2{str2};
+        MyString str3{ str2 };
     }
 
-    std::cout << str1.getString() << '\n';
-    
+    std::cout << str1.getString() << ' ' << str2.getString() << '\n';
+
     return 0;
 }
