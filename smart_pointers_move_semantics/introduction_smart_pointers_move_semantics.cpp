@@ -7,6 +7,9 @@
 // The main idea behind move semantic is to avoid having 2 smart pointers owning the same object,
 // because that would cause undefined behavour when they both try to destroy it.
 
+// In this example we can see am incorrect implementation of move semantics via the copy constructor and assignment operator.
+// It's a flawed from the begining. 
+
 template <typename T>
 class Auto_ptr
 {
