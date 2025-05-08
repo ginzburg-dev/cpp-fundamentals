@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <cstddef>
+#include <algorithm>
 
 // Move Semantics Recap:
 // When assigning or constructing from an l-value, we must copy since it may be used again.
@@ -23,6 +25,9 @@
 // If any of the above are explicitly declared, the compiler will not generate 
 // the move constructor or move assignment operator for us 
 // unless we explicitly request it with = default.
+
+// The rule of five says that if the copy constructor, copy assignment, move constructor, move assignment, 
+// or destructor are defined or deleted, then each of those functions should be defined or deleted.
 
 // Recapping copy constructors and copy assignment. Inefficient, but at least it doesn’t crash!
 template <typename T>
@@ -113,6 +118,8 @@ public:
 
         m_ptr = new T;
         *m_ptr = *a.m_ptr; // Do deep copy
+
+        return *this;
     }
 
     Auto_ptr4& operator=(Auto_ptr4&& a) noexcept
@@ -207,6 +214,166 @@ Auto_ptr4<Resource> generateResource()
     return res; // the compiler to treat res as an r-value to enable move semantics, so it will invoke the move constructor instead of copying
 }
 
+template<typename T>
+class DynamicArray
+{
+private:
+    T* m_array{};
+    int m_length{};
+
+    void allocate(int length)
+    {
+        m_array = new T[static_cast<std::size_t>(length)];
+        m_length = length;
+    }
+
+public:
+    DynamicArray(int length)
+    {
+        allocate(length);
+    }
+
+    ~DynamicArray()
+    {
+        delete[] m_array;
+    }
+
+    DynamicArray(const DynamicArray& arr)
+    {
+        allocate(arr.m_length);
+        std::copy_n(arr.m_array, m_length, m_array);
+    }
+
+    DynamicArray(DynamicArray&& arr) noexcept
+        : m_length{arr.m_length}, m_array{arr.m_array}
+    {
+        arr.m_length = 0;
+        arr.m_array = nullptr;
+    }
+
+    DynamicArray& operator=(const DynamicArray& arr)
+    {
+        if ( &arr == this )
+            return *this;
+        
+        delete m_array;
+
+        allocate(arr.m_length);
+        std::copy_n(arr.m_array, m_length, m_array);
+
+        return *this;
+    }
+
+    DynamicArray& operator=(DynamicArray&& arr) noexcept
+    {
+        if ( &arr == this )
+            return *this;
+        
+        delete[] m_array;
+
+        m_length = arr.m_length;
+        m_array = arr.m_array;
+
+        arr.m_length = 0;
+        arr.m_array = nullptr;
+
+        return *this;
+    }
+
+    int getLength() const { return m_length; }
+    T& operator[](int index) { return m_array[index]; }
+    const T& operator[](int index) const { return m_array[index]; }
+};
+
+class NonMovement
+{
+private:
+    int m_value{};
+public:
+    NonMovement(int value)
+        : m_value{value}
+    {}
+
+    NonMovement(const NonMovement& nm) = default;
+    NonMovement& operator=(const NonMovement& nm) = default;
+    NonMovement(NonMovement&& nm) = delete;
+    NonMovement& operator=(NonMovement&& nm) = delete;
+    const int& get() const { return m_value; }
+};
+
+class SwapMethod
+{
+private:
+    int m_value{};
+public:
+    SwapMethod(int value)
+        : m_value{value}
+    {}
+
+    SwapMethod(const SwapMethod& sm) = delete;
+    SwapMethod& operator=(const SwapMethod& sm) = delete;
+
+    friend void swap(SwapMethod& a, SwapMethod& b) noexcept
+    {
+        // We avoid recursive calls by invoking std::swap
+        std::swap(a.m_value, b.m_value);
+    }
+
+    SwapMethod(SwapMethod&& sm) noexcept
+    {
+        std::cout << "Move ctor\n";
+        swap(*this, sm); // Now calling our swap, not std::swap to prevent recursion because std::swap uses move semantics that invoke move constructor recursively
+    }
+
+    SwapMethod& operator=(SwapMethod&& sm) noexcept
+    {
+        std::cout << "Move assign\n";
+        swap(*this, sm); // Now calling our swap, not std::swap to prevent recursion because std::swap uses move semantics that invoke move constructor recursively
+
+        return *this;
+    }
+    const int& get() const { return m_value; }
+};
+
+#include <chrono> 
+
+class Timer
+{
+private:
+    using Clock = std::chrono::high_resolution_clock;
+    using Seconds = std::chrono::duration<double,std::ratio<1>>; // std::ratio<1> means 1 second per tick
+    
+    std::chrono::time_point<Clock> m_begin{ Clock::now() };
+
+public:
+    double elapsed() const
+    {
+        return std::chrono::duration_cast<Seconds>( Clock::now() - m_begin ).count();
+    }
+
+    void reset()
+    {
+        m_begin = Clock::now();
+    }
+};
+
+DynamicArray<int> cloneDynamicArrayAndDouble(const DynamicArray<int>& arr)
+{
+    DynamicArray<int> dbl(arr.getLength());
+    for (int i{0}; i < arr.getLength(); ++i )
+        dbl[i] = arr[i] * 2;
+
+    return dbl;
+}
+
+/*
+NonMovement getNotMovement()
+{
+    NonMovement nm{ 10 };
+    return nm; // Error: move constructor was deleted;
+}
+*/
+
 int main()
 {
      // An example of crash caused by deleting two equal pointers.
@@ -230,7 +397,37 @@ int main()
     Auto_ptr4<Resource> mainres;
     mainres = generateResource(); // this assignment will invoke the move assignment. generateResource() returns a temporary object (r-value).
     
+    // Example of DynamicArray
+    Timer t;
+    DynamicArray<int> arr(1000000);
 
+    for (int i = 0; i < 1000000; ++i)
+        arr[i] = i;
+    
+    arr = cloneDynamicArrayAndDouble(arr);
+
+    std::cout << "Evaluated by " << t.elapsed() << " s" << '\n';
+
+    // Comparison move vs copy timing
+    double copyElapsedTime{};
+    DynamicArray<int> arr_copy(0);
+    t.reset();
+    arr_copy = arr;
+    std::cout << "Copy assign operator evaluated by " << ( copyElapsedTime = t.elapsed() ) << " s" << '\n';
+
+    double moveElapsedTime{};
+    t.reset();
+    arr_copy = std::move(arr);
+    std::cout << "Move assign operator evaluated by " << ( moveElapsedTime = t.elapsed() ) << " s" << '\n';
+    std::cout << "Arr length is: " << arr.getLength() << '\n';
+
+    std::cout << "Move semantic faster than copy semanic by " << (copyElapsedTime - moveElapsedTime) / copyElapsedTime * 100 << "\%\n"; // Move semantic faster than copy semanic by 95.1405%
+
+    // Example of swapping
+
+    SwapMethod sm{10};
+    sm = SwapMethod{20};
+    std::cout << sm.get() << '\n';
 
     return 0;
 }
