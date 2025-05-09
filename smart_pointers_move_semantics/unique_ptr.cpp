@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory> // for std::unique_ptr
 
+// unique_ptr = sole ownership, non-copyable, movable only — object is destroyed when owner goes out of scope.
 // Favor std::array, std::vector, or std::string over a smart pointer managing a fixed array, dynamic array, or C-style string.
 
 class Resource
