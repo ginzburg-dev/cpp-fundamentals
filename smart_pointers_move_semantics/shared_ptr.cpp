@@ -57,5 +57,11 @@ int main()
     // Example: shared_ptr and arrays
     std::shared_ptr<Resource[]> sharedPtr_array(new Resource[4], [](Resource* p){ delete[] p; }); // in C++20, std::shared_ptr does have support for arrays. In C++11 - 17 we need to use custom deleter
 
+    // Example: std::shared_ptr supports copy — ownership is shared. Discarded resource is destroyed if no other shared_ptr owns it.
+    auto tmp1{ std::make_shared<Resource>(1, 2) };
+    auto tmp2{ std::make_shared<Resource>(3, 4) };
+
+    tmp2 = tmp1; // tmp2 and tmp1 now share the same resource
+
     return 0;
 }
