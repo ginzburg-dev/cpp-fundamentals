@@ -1,5 +1,7 @@
 #include <iostream>
 
+// const valuses and references have to be initialized in the mamber initializer list of the constructor
+
 struct CPU
 {
     int m_model{};
@@ -18,7 +20,7 @@ private:
 
 public:
     Base(const double const_double, CPU& cpu)
-        : m_const_double{const_double}, m_cpu{cpu}
+        : m_const_double{const_double}, m_cpu{cpu} // const valuses and references have to be initialized in the mamber initializer list of the constructor
     {}
 
     CPU& getCPU() { return m_cpu; }
@@ -27,8 +29,9 @@ public:
 int main()
 {
     CPU core{ 1243, 8 };
-
     Base base{ 12.3, core };
+
     std::cout << base.getCPU().m_model << '\n';
+
     return 0;
 }
