@@ -13,8 +13,8 @@ public:
         : m_name{name}, m_color{color}
     {}
 
-    const std::string_view getName() const { return m_name; }
-    const std::string_view getColor() const { return m_color; }
+    const std::string& getName() const { return m_name; }
+    const std::string& getColor() const { return m_color; }
 };
 
 class Apple : public Fruit
@@ -34,7 +34,7 @@ public:
         return out;
     }
 
-    const double getFibre() const { return m_fiber; }
+    double getFibre() const { return m_fiber; }
 };
 
 class Banana : public Fruit
