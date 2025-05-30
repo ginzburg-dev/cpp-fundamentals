@@ -101,7 +101,7 @@ public:
         ++m_damage;
     }
 
-    void drinkPotion(Potion& potion)
+    void drinkPotion(const Potion& potion)
     {
         switch(potion.getType())
         {
@@ -158,11 +158,15 @@ void onMonsterKilled(Player& player, const Monster& monster)
 
     if ( Random::get(1,100) <= Potion::potionChance )
     {
-        std::cout << "You found a magical potion! Would you like to drink it? [y/n]: ";
-        char input;
-        std::cin >> input;
-
-        if ( input == 'y' || input == 'Y' )
+        char input{};
+        while ( input != 'y' && input != 'n' )
+        {
+            std::cout << "You found a magical potion! Would you like to drink it? [y/n]: ";
+            std::cin >> input;
+            input = std::tolower(input);
+        }
+        
+        if ( input == 'y' )
         {
             Potion potion{ Potion::getRandomPotion() };
             player.drinkPotion(potion);
@@ -193,16 +197,20 @@ void fightMonster(Player& player)
 
     while ( !monster.isDead() && !player.isDead() )
     {
-        std::cout << "(R)un or (F)ight: ";
-        char input;
-        std::cin >> input;
-
-        if ( input == 'f' || input == 'F' )
+        char input{};
+        while ( input != 'f' && input != 'r' )
+        {
+            std::cout << "(R)un or (F)ight: ";
+            std::cin >> input;
+            input = std::tolower(input);
+        }
+        
+        if ( input == 'f' )
         {
             attackMonster(player, monster);
             attackPlayer(player, monster);
         }
-        else if ( input == 'r' || input == 'R' )
+        else if ( input == 'r' )
         {
             if ( Random::get(0,1) )
             {
