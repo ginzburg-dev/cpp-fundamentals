@@ -1,5 +1,7 @@
 #include "../random/random.h"
 #include <iostream>
+#include <array>
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <cassert>
@@ -36,21 +38,8 @@ public:
 class Potion
 {
 public:
-    enum Type
-    {
-        health,
-        strength,
-        poison,
-        max_type,
-    };
-
-    enum Size
-    {
-        small,
-        medium,
-        large,
-        max_size,
-    };
+    enum class Type { health, strength, poison, max_types };
+    enum class Size { small, medium, large, max_sizes };
 
     static constexpr int potionChance{ 30 };
 
@@ -59,15 +48,17 @@ public:
     {}
 
     Type getType() const { return m_type; }
-    std::string_view getName() const { return names[m_type]; }
-    std::string_view getSizeName() const { return sizeNames[m_size]; }
-    int getEffectValue() const { return m_potionEffectData[m_type][m_size]; }
+    Size getSize() const { return m_size; }
+
+    std::string_view getTypeName() const { return typeNames[static_cast<std::size_t>(m_type)]; }
+    std::string_view getSizeName() const { return sizeNames[static_cast<std::size_t>(m_size)]; }
+    int getEffectValue() const { return effectTable[static_cast<std::size_t>(m_type)][static_cast<std::size_t>(m_size)]; }
 
     static Potion getRandomPotion()
     {
         return Potion{ 
-            static_cast<Type>(Random::get(0, Type::max_type-1)), 
-            static_cast<Size>(Random::get(0, Size::max_size-1)) 
+            static_cast<Type>(Random::get(0, static_cast<int>(Type::max_types)-1)), 
+            static_cast<Size>(Random::get(0, static_cast<int>(Size::max_sizes)-1)) 
         };
     }
 
@@ -75,9 +66,20 @@ private:
     Type m_type{};
     Size m_size{};
 
-    static constexpr std::string_view names[] { "Health", "Strength", "Poison" };
-    static constexpr std::string_view sizeNames[] { "Small", "Medium", "Large" };
-    static constexpr int m_potionEffectData[][3] { { 2, 2, 5 }, { 1, 1, 1 }, { -1, -1, -1} };
+    static constexpr std::array<std::string_view, static_cast<std::size_t>(Type::max_types)> typeNames { "Health", "Strength", "Poison" };
+    static constexpr std::array<std::string_view, static_cast<std::size_t>(Size::max_sizes)> sizeNames { "Small", "Medium", "Large" };
+    static constexpr std::array<std::array<int, static_cast<std::size_t>(Size::max_sizes)>, static_cast<std::size_t>(Type::max_types)> effectTable 
+        {{ 
+            { 2, 2, 5 },
+            { 1, 1, 1 },
+            { -1, -1, -1}
+        }};
+
+    static_assert( typeNames.size() == static_cast<std::size_t>(Type::max_types) );
+    static_assert( sizeNames.size() == static_cast<std::size_t>(Size::max_sizes) );
+
+    static_assert( effectTable.size() == static_cast<std::size_t>(Type::max_types) );
+    static_assert( effectTable[0].size() == static_cast<std::size_t>(Size::max_sizes) );
 };
 
 class Player : public Creature
@@ -87,66 +89,66 @@ private:
 
 public:
     Player(std::string_view name)
-        : Creature{name,'@', 100, 1, 0}
+        : Creature{name,'@', 10, 1, 0}
     {}
 
     int getLevel() const { return m_level; }
+    bool hasWon() const { return m_level >= 20; }
+
+    void levelUp() 
+    { 
+        ++m_level;
+        ++m_damage;
+    }
 
     void drinkPotion(Potion& potion)
     {
         switch(potion.getType())
         {
         case Potion::Type::health:
+        case Potion::Type::poison:
             m_health += potion.getEffectValue();
             break;
         case Potion::Type::strength:
             m_damage += potion.getEffectValue();
             break;
-        case Potion::Type::poison:
-            m_health += potion.getEffectValue();
-            break;
         default:
             break;
         }
 
-        std::cout << "You drank a " << potion.getSizeName() << " potion of " << potion.getName() << '\n';
-    }
+        if ( m_health < 0 )
+            m_health = 0;
 
-    void levelUp() { ++m_level; ++m_damage; }
-    bool hasWon() { return m_level >= 20; }
+        std::cout << "You drank a " << potion.getSizeName() << " potion of " << potion.getTypeName() << '\n';
+    }
 };
 
 class Monster : public Creature
 {
-    public:
-    enum Type
-    {
-        dragon,
-        orc,
-        slime,
-        max_types,
-    };
+public:
+    enum class Type { dragon, orc, slime, max_types };
 
     Monster(Type type)
-        : Creature{ monsterData[type] }
+        : Creature{ monsterData[static_cast<std::size_t>(type)] }
     {}
 
     static Monster getRandomMonster()
     {
-        return Monster{ static_cast<Type>(Random::get(0, max_types-1)) };
+        auto type = static_cast<Type>(Random::get(0, static_cast<int>(Type::max_types)-1));
+        return Monster{ type };
     }
 
 private:
-    static inline Creature monsterData[] {
+    static inline const std::array<Creature, static_cast<std::size_t>(Type::max_types)> monsterData {{
         { "dragon", 'D', 20, 4, 100 },
         { "orc", 'o', 4, 2, 25 },
         { "slime", 's', 1, 1, 10 }
-    };
+    }};
 
-    static_assert(std::size(monsterData) == max_types);
+    static_assert(monsterData.size() == static_cast<std::size_t>(Type::max_types));
 };
 
-void onMonsteKilled(Player& player, const Monster& monster)
+void onMonsterKilled(Player& player, const Monster& monster)
 {
     std::cout <<  "You killed the " << monster.getName() << ".\n";
     player.levelUp();
@@ -170,23 +172,18 @@ void onMonsteKilled(Player& player, const Monster& monster)
 
 void attackPlayer(Player& player, const Monster& monster)
 {
-    if (monster.isDead())
-        return;
-
+    if (monster.isDead()) return;
     player.reduceHealth(monster.getDamage());
     std::cout << "The " << monster.getName() << " hit you for " << monster.getDamage() << " damage.\n";
 }
 
 void attackMonster(Player& player, Monster& monster)
 {
-    if (player.isDead())
-        return;
-
+    if (player.isDead()) return;
     monster.reduceHealth(player.getDamage());
     std::cout << "You hit the " << monster.getName() << " for " << player.getDamage() << " damage.\n";
-
     if (monster.isDead())
-        onMonsteKilled(player, monster);
+        onMonsterKilled(player, monster);
 }
 
 void fightMonster(Player& player)
@@ -205,8 +202,7 @@ void fightMonster(Player& player)
             attackMonster(player, monster);
             attackPlayer(player, monster);
         }
-
-        if ( input == 'r' || input == 'R' )
+        else if ( input == 'r' || input == 'R' )
         {
             if ( Random::get(0,1) )
             {
