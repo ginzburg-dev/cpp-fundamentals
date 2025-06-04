@@ -83,6 +83,7 @@ public:
     }
 
     virtual void printInfo() const { std::cout << "Asset\n"; }
+    void nonVirtualPrintInfo() const  { std::cout << "Asset\n"; }
 };
 
 class Texture : public Asset
@@ -94,6 +95,7 @@ public:
     }
 
     void printInfo() const override { std::cout << "Texture\n"; }
+    void nonVirtualPrintInfo() const  { std::cout << "Texture\n"; }
 };
 
 int main()
@@ -101,10 +103,11 @@ int main()
     Derived1 d{};
     Base1* b{ &d };
     d.getThis()->printType(); // calls Derived1::getThis(), returns a Derived1*, calls Derived1::printType
-    b->getThis()->printType(); // calls Derived1::getThis(), the returned Derived1* is upcast to a Base1*, calls Base1::printType
+    b->getThis()->printType(); // calls Derived1::getThis(), the returned Derived1* is upcast to a Base1* because printType() isn't virtual, calls Base1::printType
     
     Asset* asset = new Texture;
     asset->printInfo(); // Prints: Texture
+    asset->nonVirtualPrintInfo(); // Prints: Asset, because this function isn't virtual
 
     Texture* texture { dynamic_cast<Texture*>(asset) };
     texture->printInfo(); // Prints: Texture
