@@ -3,6 +3,11 @@
 #include <string_view>
 
 // Whenever you are dealing with inheritance, you should make any explicit destructors virtual.
+//
+// If you intend your class to be inherited from, make sure your destructor is virtual and public.
+// If you do not intend your class to be inherited from, mark your class as final. 
+// This will prevent other classes from inheriting from it in the first place, 
+// without imposing any other use restrictions on the class itself.
 
 class Base
 {
@@ -39,7 +44,7 @@ int main()
     Base* base{ derived };
     
     std::cout << base->getName() << '\n'; // Prints: Derived
-    std::cout << base->Base::getName() << '\n'; // Prints: Derived
+    std::cout << base->Base::getName() << '\n'; // Prints: Base. Calls Base::getName() instead of the virtualized Derived::getName()
 
     delete base;
 
