@@ -38,6 +38,13 @@ public:
     std::string_view getName() const override { return "Derived"; }
 };
 
+// A classic abstract class template. It has a virtual destructor that can be overridden if needed.
+class Abstract
+{
+public:
+    virtual ~Abstract() = default;
+};
+
 int main()
 {
     Derived* derived{ new Derived(5) };
