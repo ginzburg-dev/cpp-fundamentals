@@ -8,19 +8,19 @@ void print(const T& p)
 }
 
 // Specialization by defining a non-template function has the highest precedence
-void print(int p)
+void print(int p) // not implicitly 'inline'
 {
     std::cout << "Max precedence (int) specialization: " << p << '\n';
 }
 
 template<>
-void print<double>(const double& p)
+void print<double>(const double& p) // not implicitly 'inline'
 {
     std::cout << "Scientific specialization: " << std::scientific << p << '\n';
 }
 
 template<>
-void print<std::string>(const std::string& p) = delete;
+void print<std::string>(const std::string& p) = delete; // not implicitly 'inline'
 
 int main()
 {
