@@ -90,7 +90,7 @@ public:
     const double& get(int index) const { return m_data[index]; }
 };
 
-// Partial specialization is allowed only as a class based, not class' methods
+// Partial specialization is allowed only as a class based, not class' methods or functions
 template<int size>
 void printPartial(const StoragePartial<double, size>& storage)
 {
