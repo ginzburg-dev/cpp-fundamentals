@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstdint>
+#include <memory>
+#include <array>
 
 template<typename T>
 class Storage8
@@ -63,10 +65,60 @@ void Storage<double>::print() const // not explicitly 'inline'
     std::cout << std::scientific << m_value << '\n';
 }
 
+// Partial specialization
+
+template<typename T, int size>
+class StoragePartial
+{
+private:
+    T m_data[size];
+
+public:
+    void set(int index, const T& value){ m_data[index] = value; }
+    const T& get(int index) const { return m_data[index]; }
+};
+
+// Partial specialization of a class
+template<int size>
+class StoragePartial<double, size>
+{
+private:
+    double m_data[size];
+
+public:
+    void set(int index, const double& value){ m_data[index] = value; }
+    const double& get(int index) const { return m_data[index]; }
+};
+
+// Partial specialization is allowed only as a class based, not class' methods
+template<int size>
+void printPartial(const StoragePartial<double, size>& storage)
+{
+    for(int i = 0; i < size; ++i)
+        std::cout << std::scientific << storage.get(i) << ' ';
+}
+
+// Partial specialization for pointers
+template<typename T, int size>
+class StoragePartial<T*, size>
+{
+private:
+    std::array<std::unique_ptr<T>, size> m_data{};
+
+public:
+    void set(int index, const T& value){ m_data[index] = std::make_unique<T>(value); }
+    const T& get(int index) const { return *m_data[index]; }
+};
+
+
 int main()
 {
     Storage<double> storage{3.14};
     storage.print(); // Prints: 3.140000e+00
+
+    StoragePartial<double*, 1> ptrStoragePartial{};
+    ptrStoragePartial.set(0, 10.4);
+    std::cout << ptrStoragePartial.get(0) << '\n';
 
     return 0;
 }
