@@ -92,7 +92,7 @@ int main()
     std::cout << (*ptr_list)[0] << '\n';
 
     Stupid stupid{};
-    stupid["Ugly"];
+    stupid["Ugly"]; // print "Ugly"
 
     return 0;
 }

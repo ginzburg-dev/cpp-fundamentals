@@ -16,7 +16,7 @@ public:
     int getAge() const { return m_age; }
 };
 
-// BaseballPlayer class publicly inheriting Player class
+// BaseballPlayer class publicly inheriting Person class
 class BaseballPlayer : public Person
 {
 public:
@@ -28,6 +28,7 @@ public:
     {}
 };
 
+// Emplayee class publicly inheriting Person class
 class Emplayee : public Person
 {
 public:
@@ -42,6 +43,13 @@ public:
     {
         std::cout << m_name << ": " << m_hourlySalary << '\n';
     }
+};
+
+// Supervisor class is derived from Employee class
+class Supervisor : public Emplayee
+{
+public:
+    long m_overseesIDs[5]{};
 };
 
 int main()

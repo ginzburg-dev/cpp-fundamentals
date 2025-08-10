@@ -61,7 +61,7 @@ int main()
     auto tmp1{ std::make_shared<Resource>(1, 2) };
     auto tmp2{ std::make_shared<Resource>(3, 4) };
 
-    tmp2 = tmp1; // tmp2 and tmp1 now share the same resource
+    tmp2 = tmp1; // tmp2 and tmp1 now share the same resource.
 
     return 0;
 }

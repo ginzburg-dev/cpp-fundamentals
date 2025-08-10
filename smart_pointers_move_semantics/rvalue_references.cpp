@@ -7,15 +7,34 @@ L-value reference:
     - Can modify: 
         Modifiable l-values
 
-R-value reference to const:
+L-value reference to const:
     - Can be initialized with: 
         Modifiable l-values
         Non-modifiable l-values
         R-values
     - Can't modify any bound objects
 
+
+R-value reference:
+    - Can be initialized with: 
+        R-values
+    - Can modify: 
+        R-values
+
+R-value reference to const:
+    - Can be initialized with: 
+        R-values
+    - Can't modify any bound objects
+
 l-ref : int& lref{};
 r-ref:  int&& rref{};
+
+Important:
+    You should almost never return an r-value reference, for the same reason 
+    you should almost never return an l-value reference. In most cases, 
+    you’ll end up returning a hanging reference when 
+    the referenced object goes out of scope at the end of the function.
+
 */
 
 class Fraction
@@ -59,6 +78,7 @@ int main()
     int x{ 5 };
     func(x); // l-value argument calls l-value version of function
     func(5); // r-value argument calls r-value version of function
-    func(rref1); 
+    func(rref1); // l-value version of function! int&& rref1 : rref1 is an l-value of type int&& so that l-value argument calls l-value version of function
+
     return 0;
 }

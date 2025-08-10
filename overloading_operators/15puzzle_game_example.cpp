@@ -236,7 +236,7 @@ public:
                 return true;
         return false;
     }
-    static inline Tile s_solved1{};
+    
     void swapTiles(const Point& p1, const Point& p2 )
     {
         std::swap(m_tiles[p1.y][p1.x], m_tiles[p2.y][p2.x] );

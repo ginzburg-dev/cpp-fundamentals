@@ -423,8 +423,7 @@ int main()
 
     std::cout << "Move semantic faster than copy semanic by " << (copyElapsedTime - moveElapsedTime) / copyElapsedTime * 100 << "\%\n"; // Move semantic faster than copy semanic by 95.1405%
 
-    // Example of swapping
-
+    // Example of swap
     SwapMethod sm{10};
     sm = SwapMethod{20};
     std::cout << sm.get() << '\n';
