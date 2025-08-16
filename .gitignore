@@ -12,3 +12,4 @@
 
 *.
 .DS_Store
+exceptions/basic_exceptions_handling
